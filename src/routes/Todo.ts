@@ -8,10 +8,25 @@ export const todoRouter: Router = express.Router();
 todoRouter.post(
   "/todo/create",
   uploadFile.single("image"),
-  async (req, res, next) => {
+  async (req, res: any, next) => {
     try {
       const reqBody = req.body;
-      const data = await TodoModals.createTodo(reqBody);
+      const addImageFilename = { ...reqBody, image: req?.file?.filename };
+      const data: any = await TodoModals.createTodo(addImageFilename);
+      if (data?.error) {
+        return res.errorHandler({
+          res,
+          message: data?.message,
+          statusCode: 200,
+          status: false,
+        });
+      }
+      res.handler({
+        res,
+        statusCode: 200,
+        status: true,
+        message: "Todo Create Successfully",
+      });
     } catch (error) {
       console.log("create todo err: ", error);
       //@ts-ignore
@@ -22,13 +37,20 @@ todoRouter.post(
 
 //todo update routes
 todoRouter.put(
-  "/todo/update:id",
+  "/todo/update/:id",
   uploadFile.single("image"),
-  async (req, res, next) => {
+  async (req, res: any, next) => {
     try {
       const reqBody = req.body;
       const { id } = req.params;
       const data = await TodoModals.EditTaskTodo(id, reqBody);
+      res.handler({
+        res,
+        data,
+        statusCode: 200,
+        status: true,
+        message: "Todo Update Successfully",
+      });
     } catch (error) {
       console.log("edit todo err: ", error);
       //@ts-ignore
@@ -38,10 +60,24 @@ todoRouter.put(
 );
 
 //todo delete routes
-todoRouter.delete("/todo/delete:id", async (req, res, next) => {
+todoRouter.delete("/todo/delete/:id", async (req, res: any, next) => {
   try {
     const { id } = req.params;
-    const data = await TodoModals.deleteTodoTask(id);
+    const data: any = await TodoModals.deleteTodoTask(id);
+    if (data?.error) {
+      return res.errorHandler({
+        res,
+        message: data?.message,
+        statusCode: 200,
+        status: false,
+      });
+    }
+    res.handler({
+      res,
+      statusCode: 200,
+      status: true,
+      message: "Todo Delete Successfully",
+    });
   } catch (error) {
     console.log("delete todo err: ", error);
     //@ts-ignore
@@ -50,7 +86,7 @@ todoRouter.delete("/todo/delete:id", async (req, res, next) => {
 });
 
 //todo list routes
-todoRouter.get("/todo/", async (req, res, next) => {
+todoRouter.get("/todo/", async (req, res: any, next) => {
   try {
     const data = await TodoModals.listSmartCard();
     //@ts-ignore
