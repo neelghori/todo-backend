@@ -6,5 +6,5 @@
       "use": "@vercel/node"
     }
   ],
-  "rewrites": [{ "source": "/dist/(.*)", "destination": "/api" }]
+  "rewrites": [{ "source": "dist/(.*)", "destination": "/api" }]
 }
